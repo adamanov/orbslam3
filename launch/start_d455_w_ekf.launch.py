@@ -12,9 +12,9 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     ld = LaunchDescription()
-
+    # TODO: Add a launch args for camera name and namespace
     camera_name = "d455"
-    camera_namespace = "d455"
+    camera_namespace = "d455" 
 
     robot_base_tf_base_camera = Node(
         package="tf2_ros",
