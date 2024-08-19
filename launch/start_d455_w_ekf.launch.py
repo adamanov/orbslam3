@@ -16,21 +16,6 @@ def generate_launch_description():
     camera_name = "d455"
     camera_namespace = "d455"
 
-    mock_odom_base_link = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=[
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "odom",
-            "base_link",
-        ],
-    )
-
     robot_base_tf_base_camera = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -45,7 +30,7 @@ def generate_launch_description():
             f"{camera_name}_link",
         ],
     )
-
+    # Realsense camera
     launch_file_realsense = PathJoinSubstitution(
         [FindPackageShare("realsense2_camera"), "launch", "rs_launch.py"]
     )
@@ -73,9 +58,9 @@ def generate_launch_description():
         parameters=[
             {
                 "use_mag": False,
-                "publish_tf": True,
+                "publish_tf": False,
                 "world_frame": "enu",
-                "fixed_frame": "d455_link",  # The parent frame to be used in publish_tf
+                "fixed_frame": f"{camera_name}_link",  # The parent frame to be used in publish_tf
             }
         ],
         remappings=[
@@ -84,10 +69,10 @@ def generate_launch_description():
         ],
     )
 
+    # Robot localization
     config_localization = PathJoinSubstitution(
         [FindPackageShare("orbslam3"), "config/ekf.yaml"]
     )
-
     filter_odom_node = Node(
         package="robot_localization",
         executable="ekf_node",
@@ -104,7 +89,6 @@ def generate_launch_description():
     ld.add_action(launch_realsense)
     ld.add_action(imu_node)
     ld.add_action(robot_base_tf_base_camera)
-    ld.add_action(mock_odom_base_link)
-    # ld.add_action(filter_odom_node)
+    ld.add_action(filter_odom_node)
 
     return ld
