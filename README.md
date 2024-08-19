@@ -62,14 +62,30 @@ source install/setup.bash
 Currently, I modified stereo and stereo-inertial node. \
 First, start realsense node. \
 For example, to run realsense camera with stereo and imu streams, 
+
+- for D455
 ```bash
 ros2 launch realsense2_camera rs_launch.py enable_infra1:=true enable_infra2:=true enable_accel:=true enable_gyro:=true unite_imu_method:=2 infra_width:=640 infra_height:=480 camera_name:=d455 camera_namespace:=d455
 ```
 
+- for D435i
+```
+ros2 launch realsense2_camera rs_launch.py enable_infra1:=true enable_infra2:=true enable_accel:=true enable_gyro:=true unite_imu_method:=2 infra_width:=640 infra_height:=480 camera_name:=d435i camera_namespace:=d435i
+```
+
+
 Stereo node:
+- for D455
 ```bash
 ros2 launch orbslam3 stereo_d455.launch.yaml
+
 ```
+- for 435i
+
+``` 
+ros2 launch orbslam3 stereo_d435i.launch.yaml 
+```
+
 
 Stereo-Inertial node:
 ```bash

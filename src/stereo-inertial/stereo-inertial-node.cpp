@@ -23,7 +23,7 @@ StereoInertialNode::StereoInertialNode(ORB_SLAM3::System *SLAM, const string &st
     {
         // Load settings related to stereo calibration
         cv::FileStorage fsSettings(strSettingsFile, cv::FileStorage::READ);
-        if (!fsSettings.isOpened())
+        if(!fsSettings.isOpened())
         {
             cerr << "ERROR: Wrong path to settings" << endl;
             assert(0);
@@ -62,12 +62,13 @@ StereoInertialNode::StereoInertialNode(ORB_SLAM3::System *SLAM, const string &st
     rclcpp::QoS imu_qos(10);
     imu_qos.best_effort();
     imu_qos.durability_volatile();
-    ////////////////////////////////////////
+    //////////////////////////////////////// 
+    // TODO: Add topic as ros2 parameter
     subImu_ = this->create_subscription<ImuMsg>("imu", imu_qos, std::bind(&StereoInertialNode::GrabImu, this, std::placeholders::_1));
     subImgLeft_ = this->create_subscription<ImageMsg>("camera/left", 10, std::bind(&StereoInertialNode::GrabImageLeft, this, std::placeholders::_1));
     subImgRight_ = this->create_subscription<ImageMsg>("camera/right", 10, std::bind(&StereoInertialNode::GrabImageRight, this, std::placeholders::_1));
 
-    pubPose_ = this->create_publisher<PoseMsg>("body_pose", 1);
+    pubPose_ = this->create_publisher<PoseMsg>("camera_pose", 1);
     pubOdom_ = this->create_publisher<OdomMsg>("imu_odometry", 1);
     pubTrackImage_ = this->create_publisher<ImageMsg>("tracking_image", 1);
     pubPcd_ = this->create_publisher<PcdMsg>("point_cloud", 1);
@@ -238,13 +239,20 @@ void StereoInertialNode::SyncWithImu()
             // Transform of camera in  world frame
             Sophus::SE3f Tcw = SLAM_->TrackStereo(imLeft, imRight, tImLeft, vImuMeas);
             Sophus::SE3f Twc = Tcw.inverse(); // Twc is imu optical frame pose in ROS FLU map coordinate
+            RCLCPP_INFO_ONCE(this->get_logger(), "Camera pose in world frame: ");
 
             // publish topics
             std::string world_frame = this->get_parameter("world_frame").as_string();
             std::string odom_frame = this->get_parameter("odom_frame").as_string();
             std::string body_frame = this->get_parameter("body_frame").as_string();
-            std::string body_optical_frame = this->get_parameter("body_optical_frame").as_string();
-            std::string camera_optical_frame = this->get_parameter("camera_optical_frame").as_string();
+            std::string body_optical_frame = this->get_parameter("body_optical_frame").as_string(); // unused?
+            std::string camera_optical_frame = this->get_parameter("camera_optical_frame").as_string(); // unused?
+            
+            RCLCPP_INFO_ONCE(this->get_logger(), "Publishing camera pose in world frame: ");
+            RCLCPP_INFO_ONCE(this->get_logger(), world_frame.c_str());
+            RCLCPP_INFO_ONCE(this->get_logger(), odom_frame.c_str());
+            RCLCPP_INFO_ONCE(this->get_logger(), body_frame.c_str());
+            
 
             // define coordinate transforms ///
             // OpenCV to ROS FLU coordinate transforms
@@ -262,7 +270,7 @@ void StereoInertialNode::SyncWithImu()
 
             // Option1: publish map to odom tf from SLAM and odom to camera from VIO 
             //// TF processing ////
-            try {
+            try {               
                 geometry_msgs::msg::TransformStamped camera_to_odom = tf_buffer_->lookupTransform(body_frame, odom_frame, tf2::TimePointZero);
                 Sophus::SE3f Tco= transform_to_SE3(camera_to_odom);
                 Sophus::SE3f Two = Twc * Tco.inverse();

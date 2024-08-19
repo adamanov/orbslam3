@@ -4,7 +4,7 @@ launch:
       default: $(find-pkg-share orbslam3)/vocabulary/ORBvoc.txt
   - arg:
       name: "config"
-      default: $(find-pkg-share orbslam3)/config/stereo-inertial/RealSense_D435i.yaml
+      default: $(find-pkg-share orbslam3)/config/stereo-inertial/RealSense_D455.yaml
   - arg:
       name: "rectify"
       default: "false"
@@ -13,15 +13,15 @@ launch:
       default: "false"
   - arg:
       name: "camera_name"
-      default: "d435i"
+      default: "d455"
   - node:
       pkg: "orbslam3"
-      exec: "stereo-inertial"
+      exec: "stereo"
       name: "orbslam3"
       args: $(var vocab) $(var config) $(var rectify) $(var equalize)
       param:
         - 
-          from: "$(find-pkg-share orbslam3)/config/stereo-inertial-slam_d435i.yaml"
+          from: "$(find-pkg-share orbslam3)/config/stereo-inertial-slam_d455.yaml"
       remap:
         -
           from: "/camera/left"
