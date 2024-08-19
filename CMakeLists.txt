@@ -8,7 +8,6 @@ set(ENV{PYTHONPATH} "/opt/ros/humble/lib/python3.10/site-packages")
 set(CMAKE_MODULE_PATH 
 ${CMAKE_MODULE_PATH} 
 ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules) 
-# "/home/msi/thirdparty/ORB_SLAM3/CMakeModules")
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -38,8 +37,8 @@ find_package(OpenCV 4.0 QUIET)
       message(FATAL_ERROR "OpenCV > 4.2 not found.")
    endif()
 
-# MESSAGE("OPENCV VERSION:")
-# MESSAGE(${OpenCV_VERSION})
+MESSAGE("OPENCV VERSION:")
+MESSAGE(${OpenCV_VERSION})
 
 # Add the directory containing libORB_SLAM3.so to the linker search path
 link_directories(~/thirdparty/ORB-SLAM3-STEREO-FIXED/Thirdparty/DBoW2/lib)
@@ -100,9 +99,6 @@ target_include_directories(
 target_link_libraries(stereo-inertial ${OpenCV_LIBS} ${ORB_SLAM3_LIBRARIES})
 
 install(TARGETS mono rgbd stereo stereo-inertial
-  DESTINATION lib/${PROJECT_NAME})
-
-install(TARGETS mono rgbd stereo
   DESTINATION lib/${PROJECT_NAME})
 
 # Install config files

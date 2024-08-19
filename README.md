@@ -15,10 +15,10 @@ It is important to specify correctly `ORB_SLAM3_STEREO_FIXED` path as `ORB_SLAM3
 ---
 
 ## Prerequisites
-Current repository supports:
+Current repository supports native installation (without docker):
   - Ubuntu 22.04
   - ROS2 Humble
-  - OpenCV 4.5
+  - OpenCV 4.5.4
 
 
 ## Installation
